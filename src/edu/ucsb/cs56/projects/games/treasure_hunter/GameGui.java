@@ -1,5 +1,5 @@
 package edu.ucsb.cs56.projects.games.treasure_hunter;
-
+import javax.swing.*;
 import javax.swing.JFrame;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
@@ -18,6 +18,8 @@ import java.awt.event.ActionListener;
 public class GameGui
 {
     Player player;
+    int playerX;
+    int playerY;
     Player treasure;
     Player treasure1;
     Player treasure2;
@@ -26,8 +28,8 @@ public class GameGui
     public static boolean debug = true;
     public static final String resourcesDir = "/resources/";
 
-    public static void main(String[] args)
-    {
+public static void main(String[] args){
+
 	if(debug) { System.out.println("Starting main");}
 	GameGui gui = new GameGui();
 
@@ -102,6 +104,7 @@ public class GameGui
 	component.loadPlayer(treasure,"treasure");
 	component.loadMap("map.txt");
 	addBindings();
+  DirectionTimer.start();
 
 	// adds game components and makes the window visible
 	frame.add(component);
@@ -119,11 +122,15 @@ public class GameGui
        on key release."
     http://stackoverflow.com/questions/22730715/java-keyboard-input-game-development
   */
+
   private static final int DELAY = 50;
-  private class AnimationListener implements ActionListener{
+  private Timer DirectionTimer = new Timer(DELAY, new InputTracker());
+
+  private class InputTracker implements ActionListener{
       @Override
       public void actionPerformed(ActionEvent e) {
-
+        int x = playerX;
+        int y = playerY;
       }
   }
 
@@ -150,11 +157,13 @@ public class GameGui
 
      @Override
 	   public void actionPerformed(ActionEvent e) {
+
 	      player.setSprite(startingSprite);
 	      component.checkMove(player.getXTile() + x, player.getYTile() + y);
 	      if(player.isMovable()) {
 		        //player.setMovable(false);
 		        for(int i = 0; i < 50; i++) {
+                // this for loop is the actual code that moves the player
 		            player.moveTo(player.getXPos() + x,player.getYPos()+y);
 		            if(x !=0 || y!=0)
 			             player.setSprite(startingSprite+i/10);
@@ -164,7 +173,7 @@ public class GameGui
 		            try{ Thread.sleep(5); }
 		            catch(Exception ex) {}
 		        }
-		        player.setTiles(player.getXTile() + x, player.getYTile()+y);
+		        player.setTiles(player.getXTile() + x, player.getYTile() + y);
 	      }
 	      component.validate();
 	      component.repaint();
